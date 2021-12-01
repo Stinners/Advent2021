@@ -1,0 +1,9 @@
+package Advent 
+
+modules = Main
+          , Common
+          , Parser 
+
+sourcedir = "src"
+
+main = Main
