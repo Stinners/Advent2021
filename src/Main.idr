@@ -9,6 +9,7 @@ import Common
 import Parser
 
 import Solutions.Day1
+import Solutions.Day2
 
 -- Read the contents of the input file as a string
 getInput : (day : String) -> EitherT String IO String
@@ -22,6 +23,7 @@ getInput day = do
 getSolution : (day : String) -> EitherT String IO Solution
 getSolution day = case day of 
      "1" => right Day1.run
+     "2" => right Day2.run
      _ => left "No solution found for this day"
 
 displaySolution : (solution : Either String (String, String)) -> String
