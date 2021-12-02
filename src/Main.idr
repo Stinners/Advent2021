@@ -11,10 +11,14 @@ import Parser
 import Solutions.Day1
 import Solutions.Day2
 
+data Env = Run | Test
+
 -- Read the contents of the input file as a string
-getInput : (day : String) -> EitherT String IO String
-getInput day = do
-  let filename = "./inputs/day" ++ day ++".txt"
+getInput : Env -> (day : String) -> EitherT String IO String
+getInput env day = do
+  let filename = case env of 
+                      Run  => "./inputs/day" ++ day ++".txt"
+                      Test => "./inputs/day" ++ day ++"_test.txt"
   input <- readFile filename
   case input of 
     Right output => right output 
@@ -31,21 +35,29 @@ displaySolution (Left err) = err
 displaySolution (Right (part1, part2)) =
   "\nPart1:\n" ++ part1 ++ "\n\nPart2:\n" ++ part2 ++ "\n"
 
-runProgram : (day : String) -> EitherT String IO String
-runProgram day = do
-  input <- getInput day        
+runProgram : Env -> (day : String) -> EitherT String IO String
+runProgram env day = do
+  input <- getInput env day        
   solution <- getSolution day
   pure . displaySolution . solution $ input 
 
 getDayNumber : IO (Maybe String)
 getDayNumber = map (tail' >=> head') getArgs 
 
--- This is extracted here to make running from the repl easier
-run : Show day => day ->  IO ()
-run day = do
-  Right result <- runEitherT (runProgram (show day))
+
+doProgram : Show day => Env -> day -> IO ()
+doProgram env day = do
+  Right result <- runEitherT (runProgram env (show day))
     | Left err => putStrLn err
   putStr result
+
+-- This is extracted here to make running from the repl easier
+run : Show day => day -> IO ()
+run = doProgram Run
+
+-- This is extracted here to make running from the repl easier
+test : Show day => day -> IO ()
+test = doProgram Test
 
 main : IO ()
 main = do 
